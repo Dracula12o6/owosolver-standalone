@@ -71,9 +71,32 @@ async function Solve(userToken, SOLVER_CONFIG) {
     const needToVerify = await checkCaptchaRequired(sessionCookie);
     if (!needToVerify) return { message: 'No captcha on this account' };
 
-    const solvedToken = await requestTokenFromSolver(SOLVER_CONFIG);
-    if (!solvedToken) throw new Error('Captcha solver failed');
+    const MAX_RETRIES = 3;
+    let solvedToken = null;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            console.log(`[+] Captcha solving attempt ${attempt}/${MAX_RETRIES}`);
+            solvedToken = await requestTokenFromSolver(SOLVER_CONFIG);
 
+            if (solvedToken) {
+                console.log(`[+] Captcha solved successfully on attempt ${attempt}`);
+                break;
+            } else {
+                throw new Error('No token returned from solver');
+            }
+        } catch (error) {
+            console.error(`[-] Attempt ${attempt} failed: ${error.message}`);
+
+            if (attempt === MAX_RETRIES) {
+                throw new Error(`Captcha solver failed after ${MAX_RETRIES} attempts`);
+            }
+
+            // Wait before retry (exponential backoff)
+            const delay = 2000 * attempt;
+            console.log(`[-] Retrying in ${delay / 1000} seconds...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
     const result = await submitFinalVerification(sessionCookie, solvedToken);
     if (!result) throw new Error('Final verification failed');
 

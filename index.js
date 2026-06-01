@@ -71,12 +71,29 @@ function runBot(token, index) {
     });
 
     client.on('messageCreate', async message => {
-        const text = message.content.toLowerCase();
-        if (text.includes('verify') && text.includes(client.user.id) && message.author.id == '408785106942164992') {
-            console.log(`[${index}] Verify detected, Solving.`);
+       if (message.author.id !== '408785106942164992') return;
+
+        // Remove zero-width characters and normalize
+        const raw = message.content;
+        const normalized = raw
+            .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
+            .replace(/<a?:[a-zA-Z0-9_]+:\d+>/g, '') // Remove custom emojis like <:blank:...>
+            .replace(/[^a-zA-Z0-9\s]/g, ' ') // Replace special chars with spaces
+            .toLowerCase();
+
+        // Check for captcha indicators in normalized text
+        const hasMention = raw.includes(`<@${client.user.id}>`) || raw.includes(`<@!${client.user.id}>`);
+        const hasCaptchaKeywords = normalized.includes('human') ||
+            normalized.includes('verify') ||
+            normalized.includes('captcha') ||
+            normalized.includes('complete');
+
+        if (hasMention && hasCaptchaKeywords) {
+            console.log(`[] Captcha detected!`);
             await solveWithRetry(token, SOLVER_CONFIG);
         }
     });
+
 
     client.login(token).catch(err => {
         console.error(`[${index}] Login failed:`, err.message);

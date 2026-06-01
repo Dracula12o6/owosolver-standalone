@@ -48,3 +48,5 @@ This project is provided for educational purposes only.
 The author does not encourage or endorse violations of the Terms of Service of OWO Bot, Discord, or any other platform. Use this software at your own risk.
 
 The author assumes no responsibility for any account restrictions, suspensions, bans, or other consequences resulting from the use of this project.
+
+<img width="447" height="313" alt="Capture" src="https://github.com/user-attachments/assets/27f1e63b-3ece-4795-9e87-1a47a54efa2f" />

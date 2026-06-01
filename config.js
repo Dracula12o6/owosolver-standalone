@@ -5,6 +5,6 @@ module.exports = {
         baseurl: 'http://owobot.com/',  // owo captcha url
         proxy: '',  // Leave empty if no proxy
         ApiKey: 'YOUR_API_KEY_HERE', // Scarnox ApiKey , 0.6$/1k with ur own proxy
-        endpoint: ''                                   // or 0.75$/1k proxyless
+        endpoint: 'https://api.scarnox.com/api/tasks/create'                                   // or 0.75$/1k proxyless
     }
 };
